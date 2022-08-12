@@ -1,0 +1,246 @@
+[gd_scene load_steps=10 format=2]
+
+[ext_resource path="res://Viewport.gd" type="Script" id=1]
+[ext_resource path="res://Test.gdshader" type="Shader" id=2]
+[ext_resource path="res://Sprite.gd" type="Script" id=3]
+[ext_resource path="res://MainViewportContainer.gd" type="Script" id=4]
+
+[sub_resource type="GDScript" id=7]
+script/source = "extends Label
+
+func _on_HSlider_value_changed(value):
+    text = str(value)
+"
+
+[sub_resource type="GDScript" id=6]
+script/source = "extends Label
+
+func _on_HSlider2_value_changed(value):
+    text = str(value) + \"/s\"
+    pass # Replace with function body.
+"
+
+[sub_resource type="ShaderMaterial" id=2]
+resource_local_to_scene = true
+shader = ExtResource( 2 )
+shader_param/pixel_size = null
+shader_param/process = false
+shader_param/color_born = Color( 0.5, 8, 0.5, 1 )
+shader_param/color_survive = Color( 1, 1, 1, 1 )
+shader_param/color_dead = Color( 0.2, 0, 0, 1 )
+
+[sub_resource type="ViewportTexture" id=5]
+viewport_path = NodePath("H/VBoxContainer2/BackBufferContainer/BackBufferViewport")
+
+[sub_resource type="ViewportTexture" id=4]
+viewport_path = NodePath("H/VBoxContainer/MainViewportContainer/MainViewport/FrontBufferContainer/FrontBufferViewport")
+
+[node name="VBoxContainer" type="VBoxContainer"]
+margin_bottom = 600.0
+
+[node name="Panel" type="Panel" parent="."]
+margin_right = 1288.0
+margin_bottom = 20.0
+rect_min_size = Vector2( 0, 20 )
+
+[node name="Menu" type="HBoxContainer" parent="."]
+margin_top = 24.0
+margin_right = 1288.0
+margin_bottom = 64.0
+
+[node name="Label" type="Label" parent="Menu"]
+margin_top = 13.0
+margin_right = 79.0
+margin_bottom = 27.0
+rect_min_size = Vector2( 60, 0 )
+text = "Zoom Level:"
+align = 1
+valign = 1
+
+[node name="HSlider" type="HSlider" parent="Menu"]
+margin_left = 83.0
+margin_right = 183.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 100, 0 )
+size_flags_vertical = 5
+min_value = 1.0
+max_value = 10.0
+value = 5.0
+
+[node name="LZoom" type="Label" parent="Menu"]
+margin_left = 187.0
+margin_top = 13.0
+margin_right = 247.0
+margin_bottom = 27.0
+rect_min_size = Vector2( 60, 0 )
+text = "x5"
+valign = 1
+script = SubResource( 7 )
+
+[node name="CheckButton" type="CheckButton" parent="Menu"]
+margin_left = 251.0
+margin_right = 375.0
+margin_bottom = 40.0
+pressed = true
+text = "Active:"
+
+[node name="Speed" type="Label" parent="Menu"]
+margin_left = 379.0
+margin_top = 13.0
+margin_right = 529.0
+margin_bottom = 27.0
+rect_min_size = Vector2( 150, 0 )
+text = "Simulation Speed: "
+align = 1
+valign = 1
+
+[node name="HSlider2" type="HSlider" parent="Menu"]
+margin_left = 533.0
+margin_right = 633.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 100, 0 )
+size_flags_vertical = 5
+min_value = 1.0
+max_value = 30.0
+value = 1.0
+rounded = true
+
+[node name="Label2" type="Label" parent="Menu"]
+margin_left = 637.0
+margin_top = 13.0
+margin_right = 697.0
+margin_bottom = 27.0
+rect_min_size = Vector2( 60, 0 )
+text = "1/s"
+valign = 1
+script = SubResource( 6 )
+
+[node name="Button" type="Button" parent="Menu"]
+margin_left = 701.0
+margin_right = 783.0
+margin_bottom = 40.0
+text = "Single Step"
+
+[node name="Panel2" type="Panel" parent="."]
+margin_top = 68.0
+margin_right = 1288.0
+margin_bottom = 88.0
+rect_min_size = Vector2( 0, 20 )
+
+[node name="H" type="HBoxContainer" parent="."]
+margin_top = 92.0
+margin_right = 1288.0
+margin_bottom = 710.0
+rect_min_size = Vector2( 1024, 600 )
+
+[node name="VBoxContainer" type="VBoxContainer" parent="H"]
+margin_right = 600.0
+margin_bottom = 618.0
+
+[node name="Label" type="Label" parent="H/VBoxContainer"]
+margin_right = 600.0
+margin_bottom = 14.0
+text = "Click on area below to create life:"
+
+[node name="MainViewportContainer" type="ViewportContainer" parent="H/VBoxContainer"]
+margin_top = 18.0
+margin_right = 600.0
+margin_bottom = 518.0
+rect_min_size = Vector2( 600, 500 )
+stretch = true
+stretch_shrink = 5
+script = ExtResource( 4 )
+
+[node name="MainViewport" type="Viewport" parent="H/VBoxContainer/MainViewportContainer"]
+size = Vector2( 120, 100 )
+transparent_bg = true
+handle_input_locally = false
+disable_3d = true
+usage = 1
+render_target_update_mode = 3
+
+[node name="FrontBufferContainer" type="ViewportContainer" parent="H/VBoxContainer/MainViewportContainer/MainViewport"]
+margin_right = 600.0
+margin_bottom = 600.0
+rect_min_size = Vector2( 600, 600 )
+size_flags_horizontal = 3
+size_flags_vertical = 3
+stretch = true
+
+[node name="FrontBufferViewport" type="Viewport" parent="H/VBoxContainer/MainViewportContainer/MainViewport/FrontBufferContainer"]
+size = Vector2( 600, 600 )
+handle_input_locally = false
+disable_3d = true
+usage = 1
+debug_draw = 1
+render_target_update_mode = 3
+script = ExtResource( 1 )
+main = true
+
+[node name="BackBufferSprite" type="Sprite" parent="H/VBoxContainer/MainViewportContainer/MainViewport/FrontBufferContainer/FrontBufferViewport"]
+material = SubResource( 2 )
+texture = SubResource( 5 )
+centered = false
+script = ExtResource( 3 )
+
+[node name="Cursor" type="ColorRect" parent="H/VBoxContainer/MainViewportContainer/MainViewport/FrontBufferContainer/FrontBufferViewport/BackBufferSprite"]
+margin_right = 1.0
+margin_bottom = 1.0
+rect_min_size = Vector2( 1, 1 )
+
+[node name="Timer" type="Timer" parent="H/VBoxContainer/MainViewportContainer/MainViewport/FrontBufferContainer/FrontBufferViewport/BackBufferSprite"]
+autostart = true
+
+[node name="ColorRect" type="ColorRect" parent="H"]
+margin_left = 604.0
+margin_right = 684.0
+margin_bottom = 618.0
+rect_min_size = Vector2( 80, 200 )
+size_flags_horizontal = 3
+size_flags_vertical = 3
+color = Color( 0.184314, 0.184314, 0.184314, 1 )
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="H"]
+margin_left = 688.0
+margin_right = 1288.0
+margin_bottom = 618.0
+
+[node name="Label" type="Label" parent="H/VBoxContainer2"]
+margin_right = 600.0
+margin_bottom = 14.0
+text = "Texture belows shows backbuffer. i.e. previsly rendered frame"
+
+[node name="BackBufferContainer" type="ViewportContainer" parent="H/VBoxContainer2"]
+margin_top = 18.0
+margin_right = 600.0
+margin_bottom = 618.0
+rect_min_size = Vector2( 600, 600 )
+size_flags_horizontal = 3
+size_flags_vertical = 3
+stretch = true
+
+[node name="BackBufferViewport" type="Viewport" parent="H/VBoxContainer2/BackBufferContainer"]
+size = Vector2( 600, 600 )
+handle_input_locally = false
+disable_3d = true
+usage = 1
+debug_draw = 1
+render_target_update_mode = 3
+
+[node name="FrontBufferSprite" type="Sprite" parent="H/VBoxContainer2/BackBufferContainer/BackBufferViewport"]
+texture = SubResource( 4 )
+centered = false
+
+[node name="Panel3" type="Panel" parent="."]
+margin_top = 714.0
+margin_right = 1288.0
+margin_bottom = 734.0
+rect_min_size = Vector2( 0, 20 )
+
+[connection signal="value_changed" from="Menu/HSlider" to="Menu/LZoom" method="_on_HSlider_value_changed"]
+[connection signal="value_changed" from="Menu/HSlider" to="H/VBoxContainer/MainViewportContainer" method="_on_HSlider_value_changed"]
+[connection signal="toggled" from="Menu/CheckButton" to="H/VBoxContainer/MainViewportContainer/MainViewport/FrontBufferContainer/FrontBufferViewport/BackBufferSprite" method="_on_simulation_enabled"]
+[connection signal="value_changed" from="Menu/HSlider2" to="Menu/Label2" method="_on_HSlider2_value_changed"]
+[connection signal="value_changed" from="Menu/HSlider2" to="H/VBoxContainer/MainViewportContainer/MainViewport/FrontBufferContainer/FrontBufferViewport/BackBufferSprite" method="_on_simulation_speed_changed"]
+[connection signal="pressed" from="Menu/Button" to="H/VBoxContainer/MainViewportContainer/MainViewport/FrontBufferContainer/FrontBufferViewport/BackBufferSprite" method="_on_Button_pressed"]
+[connection signal="timeout" from="H/VBoxContainer/MainViewportContainer/MainViewport/FrontBufferContainer/FrontBufferViewport/BackBufferSprite/Timer" to="H/VBoxContainer/MainViewportContainer/MainViewport/FrontBufferContainer/FrontBufferViewport/BackBufferSprite" method="_on_Timer_timeout"]
