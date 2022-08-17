@@ -10,16 +10,16 @@ func _ready():
 func _input(event):
     var mouse = event as InputEventMouseMotion
     if mouse:
-        $Cursor.rect_position = mouse.position - Vector2(0.5,0.5)
+        $Brush.rect_position = mouse.position - Vector2(0.5,0.5)
         
 func _process(delta):
     # This 'draws' a new pixel to the texture
-    $Cursor.visible = Input.is_mouse_button_pressed(BUTTON_LEFT)
+    $Brush.visible = Input.is_mouse_button_pressed(BUTTON_LEFT)
 
 func _simulation_step():
-    (material as ShaderMaterial).set_shader_param("process", true)
+    (material as ShaderMaterial).set_shader_param("delta", 1.0)
     yield(get_tree(), "idle_frame")
-    (material as ShaderMaterial).set_shader_param("process", false)
+    (material as ShaderMaterial).set_shader_param("delta", 0.0)
 
 func _on_Timer_timeout():
     _simulation_step()

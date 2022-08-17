@@ -1,9 +1,10 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=18 format=2]
 
-[ext_resource path="res://Viewport.gd" type="Script" id=1]
-[ext_resource path="res://Test.gdshader" type="Shader" id=2]
+[ext_resource path="res://Biosphare.gdshader" type="Shader" id=2]
 [ext_resource path="res://Sprite.gd" type="Script" id=3]
 [ext_resource path="res://MainViewportContainer.gd" type="Script" id=4]
+[ext_resource path="res://plants.png" type="Texture" id=5]
+[ext_resource path="res://PlantsTilemap.gdshader" type="Shader" id=6]
 
 [sub_resource type="GDScript" id=7]
 script/source = "extends Label
@@ -24,12 +25,71 @@ func _on_HSlider2_value_changed(value):
 resource_local_to_scene = true
 shader = ExtResource( 2 )
 shader_param/pixel_size = null
-shader_param/process = false
-shader_param/color_born = Color( 0.5, 8, 0.5, 1 )
-shader_param/color_survive = Color( 1, 1, 1, 1 )
-shader_param/color_dead = Color( 0.2, 0, 0, 1 )
+shader_param/delta = 0.0
+shader_param/spontanous_spawn_chance = 0.001
+shader_param/reproduction_chance = 0.01
+shader_param/new_plant_color = Color( 0, 0.1, 0, 1 )
+shader_param/plant_grow_rate = 0.03
+shader_param/plant_decay_rate = 0.01
+shader_param/shadow_factor = 2.0
 
 [sub_resource type="ViewportTexture" id=5]
+viewport_path = NodePath("H/VBoxContainer2/BackBufferContainer/BackBufferViewport")
+
+[sub_resource type="ViewportTexture" id=14]
+viewport_path = NodePath("H/VBoxContainer/MainViewportContainer/MainViewport/FrontBufferContainer/FrontBufferViewport")
+
+[sub_resource type="ShaderMaterial" id=12]
+resource_local_to_scene = true
+shader = ExtResource( 6 )
+shader_param/num_stages = 8
+shader_param/offset = null
+shader_param/scale = null
+shader_param/data_tex = SubResource( 14 )
+
+[sub_resource type="ShaderMaterial" id=15]
+
+[sub_resource type="QuadMesh" id=13]
+material = SubResource( 15 )
+size = Vector2( 32, -64 )
+center_offset = Vector3( 16, 16, 0 )
+
+[sub_resource type="MultiMesh" id=9]
+resource_local_to_scene = true
+custom_data_format = 2
+mesh = SubResource( 13 )
+
+[sub_resource type="GDScript" id=10]
+script/source = "extends MultiMeshInstance2D
+
+export var viewport : ViewportTexture
+
+# Called when the node enters the scene tree for the first time.
+func _ready():
+    
+    var width = 40;
+    var height = 40;
+    
+    multimesh.instance_count = width * height;
+    (material as ShaderMaterial).set_shader_param(\"data_tex\", viewport)
+    
+    var index = 0
+    for y in range (0,height):
+        for x in range (0, width):
+            var position := Transform2D()
+            position = position.translated(Vector2(x * 16, y * 16))
+            multimesh.set_instance_transform_2d(index, position)
+            multimesh.set_instance_custom_data(index, Color(float(x) / viewport.get_size().x, float(y) / viewport.get_size().y, 1.0, 1.0))
+            index += 1
+    
+    pass # Replace with function body.
+
+func _draw():
+    # draw_rect(Rect2(0,0,32*18, 32*18), Color(0,1,0,1), false, 5.0)
+    pass
+"
+
+[sub_resource type="ViewportTexture" id=11]
 viewport_path = NodePath("H/VBoxContainer2/BackBufferContainer/BackBufferViewport")
 
 [sub_resource type="ViewportTexture" id=4]
@@ -39,13 +99,13 @@ viewport_path = NodePath("H/VBoxContainer/MainViewportContainer/MainViewport/Fro
 margin_bottom = 600.0
 
 [node name="Panel" type="Panel" parent="."]
-margin_right = 1288.0
+margin_right = 1892.0
 margin_bottom = 20.0
 rect_min_size = Vector2( 0, 20 )
 
 [node name="Menu" type="HBoxContainer" parent="."]
 margin_top = 24.0
-margin_right = 1288.0
+margin_right = 1892.0
 margin_bottom = 64.0
 
 [node name="Label" type="Label" parent="Menu"]
@@ -123,13 +183,13 @@ text = "Single Step"
 
 [node name="Panel2" type="Panel" parent="."]
 margin_top = 68.0
-margin_right = 1288.0
+margin_right = 1892.0
 margin_bottom = 88.0
 rect_min_size = Vector2( 0, 20 )
 
 [node name="H" type="HBoxContainer" parent="."]
 margin_top = 92.0
-margin_right = 1288.0
+margin_right = 1892.0
 margin_bottom = 710.0
 rect_min_size = Vector2( 1024, 600 )
 
@@ -174,8 +234,6 @@ disable_3d = true
 usage = 1
 debug_draw = 1
 render_target_update_mode = 3
-script = ExtResource( 1 )
-main = true
 
 [node name="BackBufferSprite" type="Sprite" parent="H/VBoxContainer/MainViewportContainer/MainViewport/FrontBufferContainer/FrontBufferViewport"]
 material = SubResource( 2 )
@@ -183,10 +241,11 @@ texture = SubResource( 5 )
 centered = false
 script = ExtResource( 3 )
 
-[node name="Cursor" type="ColorRect" parent="H/VBoxContainer/MainViewportContainer/MainViewport/FrontBufferContainer/FrontBufferViewport/BackBufferSprite"]
-margin_right = 1.0
-margin_bottom = 1.0
+[node name="Brush" type="ColorRect" parent="H/VBoxContainer/MainViewportContainer/MainViewport/FrontBufferContainer/FrontBufferViewport/BackBufferSprite"]
+margin_right = 5.0
+margin_bottom = 5.0
 rect_min_size = Vector2( 1, 1 )
+color = Color( 0, 0, 0, 1 )
 
 [node name="Timer" type="Timer" parent="H/VBoxContainer/MainViewportContainer/MainViewport/FrontBufferContainer/FrontBufferViewport/BackBufferSprite"]
 autostart = true
@@ -200,9 +259,22 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 color = Color( 0.184314, 0.184314, 0.184314, 1 )
 
-[node name="VBoxContainer2" type="VBoxContainer" parent="H"]
+[node name="MarginContainer" type="MarginContainer" parent="H"]
 margin_left = 688.0
 margin_right = 1288.0
+margin_bottom = 618.0
+rect_min_size = Vector2( 600, 600 )
+
+[node name="MultiMeshInstance2D" type="MultiMeshInstance2D" parent="H/MarginContainer"]
+material = SubResource( 12 )
+multimesh = SubResource( 9 )
+texture = ExtResource( 5 )
+script = SubResource( 10 )
+viewport = SubResource( 11 )
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="H"]
+margin_left = 1292.0
+margin_right = 1892.0
 margin_bottom = 618.0
 
 [node name="Label" type="Label" parent="H/VBoxContainer2"]
@@ -233,7 +305,7 @@ centered = false
 
 [node name="Panel3" type="Panel" parent="."]
 margin_top = 714.0
-margin_right = 1288.0
+margin_right = 1892.0
 margin_bottom = 734.0
 rect_min_size = Vector2( 0, 20 )
 
