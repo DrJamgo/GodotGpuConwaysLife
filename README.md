@@ -15,4 +15,4 @@ This project is an implementation of a growing forest, inspired by [Conways Life
 ## Demo
 ![](forest-simulation-demo.gif)
 
-Try it yourself: [https://drjamgo.itch.io/godot-gpu-life-simulation-growing-forest](https://drjamgo.itch.io/godot-gpu-life-simulation-growing-forest)
+Try it yourself on itch: [https://drjamgo.itch.io/godot-gpu-life-simulation-growing-forest](https://drjamgo.itch.io/godot-gpu-life-simulation-growing-forest)
